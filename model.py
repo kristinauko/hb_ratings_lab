@@ -14,8 +14,8 @@ db = SQLAlchemy()
 
 class User(db.Model):
     """User of ratings website."""
-
     __tablename__ = "users"
+
 
     user_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     email = db.Column(db.String(64), nullable=True)
@@ -23,8 +23,31 @@ class User(db.Model):
     age = db.Column(db.Integer, nullable=True)
     zipcode = db.Column(db.String(15), nullable=True)
 
+    def __repr__(self):
+        """Show information about the user"""
+
+
+
 
 # Put your Movie and Rating model classes here.
+class Movie(db.Model):
+
+    __tablename__ = "movies"
+
+    movie_id = db.Column(db.Integer, autoincrement=True, primary_key=True,)
+    title = db.Column(db.String(100), nullable=True,)
+    released_at = db.Column(db.DateTime, nullable=True,)
+    imdb_url = db.Column(db.String(200), nullable=True,)
+
+
+
+class Rating(db.Model):
+    __tablename__ = "ratings"
+
+    rating_id = db.Column(db.Integer, autoincrement=True, primary_key=True,)
+    movie_id = db.Column(db.Integer, nullable=True,)
+    user_id = db.Column(db.Integer, nullable=True,)
+    score = db.Column(db.Integer, nullable=True,)
 
 
 ##############################################################################
@@ -38,6 +61,8 @@ def connect_to_db(app):
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     db.app = app
     db.init_app(app)
+
+
 
 
 if __name__ == "__main__":
