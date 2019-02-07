@@ -1,11 +1,9 @@
-"""Movie Ratings."""
-
 from jinja2 import StrictUndefined
 
-from flask import Flask
+from flask import (Flask, render_template, redirect, request, flash, session)
 from flask_debugtoolbar import DebugToolbarExtension
 
-from model import connect_to_db, db
+from model import User, Rating, Movie, connect_to_db, db
 
 
 app = Flask(__name__)
@@ -22,7 +20,44 @@ app.jinja_env.undefined = StrictUndefined
 @app.route('/')
 def index():
     """Homepage."""
-    return "<html><body>Placeholder for the homepage.</body></html>"
+    return render_template("homepage.html")
+
+@app.route("/users")
+def user_list():
+    """Show list of users."""
+
+    users = User.query.all()
+    return render_template("user_list.html", users=users)
+
+@app.route("/register", methods=["GET"])
+def register_form():
+
+    email_input = request.form['email']
+    password_input = request.form['password']
+
+
+    if User.query.filter_by(email=email_input).one():
+        redirect("/user_list")
+    else:
+        new_user = User(email=email_input,password=password_input)
+        db.session.add(new_user)
+        db.session.commit()
+    
+
+    # if password == 'let-me-in':   # FIXME # get password from database if it exists
+    #     session['current_user'] = username
+    #     flash("Logged in as %s" % username)
+    #     return redirect("/")
+
+    # else:
+    #     flash("Wrong password!")
+    #     return redirect("/login")
+
+    person = request.args.get('email')
+
+
+    return render_template("register_form.html") 
+
 
 
 if __name__ == "__main__":
