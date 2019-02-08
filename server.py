@@ -29,20 +29,26 @@ def user_list():
     users = User.query.all()
     return render_template("user_list.html", users=users)
 
+# Note: we suspect there is a data integrity issue within this statement ^
 @app.route("/register", methods=["GET"])
+def show_form():
+    """Takes user to the registration form."""
+
+    return render_template("register_form.html")
+
+@app.route("/register", methods=["POST"])
 def register_form():
 
-    email_input = request.form['email']
-    password_input = request.form['password']
+    email_input = request.form.get("email")
+    password_input = request.form.get("password")
 
 
-    if User.query.filter_by(email=email_input).one():
-        redirect("/user_list")
-    else:
+    if not User.query.filter_by(email=email_input).first():
         new_user = User(email=email_input,password=password_input)
         db.session.add(new_user)
         db.session.commit()
-    
+        
+    return redirect("/")
 
     # if password == 'let-me-in':   # FIXME # get password from database if it exists
     #     session['current_user'] = username
@@ -55,8 +61,7 @@ def register_form():
 
     person = request.args.get('email')
 
-
-    return render_template("register_form.html") 
+    
 
 
 
